@@ -71,12 +71,18 @@ var quotes = [
 	},	
 ];
 
+var arr_placeholder = [], generatedNumber; // placeholder array, and placeholder for random number
+
+
 function getRandomQuote(){ //only returns object to minimize code for source
-	return quotes[Math.floor(Math.random() * quotes.length)];
+	generatedNumber = Math.floor(Math.random() * quotes.length);
+	return quotes[generatedNumber];
 }
 
 function printQuote(){
 	var generatedQuote = getRandomQuote();
+	quotes.splice(generatedNumber, 1);
+	arr_placeholder.push(generatedQuote);
 	quoteElement.textContent = generatedQuote.quote;
 	sourceElement.textContent = generatedQuote.source;
 	if(generatedQuote.hasOwnProperty("citation")){
@@ -89,12 +95,21 @@ function printQuote(){
 		yearElement.textContent = generatedQuote.year;
 		sourceElement.innerHTML += "<span id=\"year\" class=\"year\"> " + yearElement.textContent +" </span>";
 	}
-}
-
-loadQuote.onclick = function(event){
-	printQuote();
+	// console.log(quotes.length)
+	// console.log(arr_placeholder.length)
+	if(quotes.length < 1){
+		quotes = arr_placeholder.splice(0);
+		arr_placeholder.splice(0, arr_placeholder.length);
+	}
 }
 
 window.onload = function(event){
 	printQuote();
+	timerStart();
 }
+
+var intervalID;
+function timerStart(){
+	intervalID = window.setInterval(printQuote, 15000);
+}
+
