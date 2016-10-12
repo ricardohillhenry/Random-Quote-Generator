@@ -5,9 +5,10 @@ var quoteElement = document.getElementById("quote"),
 	sourceElement = document.getElementById("source"),
 	citeElement = document.getElementById("citation"),
 	yearElement = document.getElementById("year"),
-	loadQuote = document.getElementById("loadQuote");
+	arr_placeholder = [], //placeholder array for temporarily storing used quotes, after they've been removed from quotes array
+	generatedNumber; // holds generated random number when getRandomQuote() is called; making it accessible globally
 
-//Winging the years just to experiment
+
 var quotes = [
 	{
 		quote: "A woman's mind is cleaner than a man's.",
@@ -71,22 +72,36 @@ var quotes = [
 	},	
 ];
 
-var arr_placeholder = [], generatedNumber; // placeholder array, and placeholder for random number
+window.onload = function(event){
+	printQuote();
+	window.setInterval(printQuote, 10000);
+};
 
 
-function getRandomQuote(){ //only returns object to minimize code for source
-	generatedNumber = Math.floor(Math.random() * quotes.length);
-	return quotes[generatedNumber];
-}
 
+
+
+/*================================== Function Declaration(s) ==================================*/
 function printQuote(){
-	var generatedQuote = getRandomQuote();
-	quotes.splice(generatedNumber, 1);
-	arr_placeholder.push(generatedQuote);
-	quoteElement.textContent = generatedQuote.quote;
+	/*
+	Randomly generates a quote from quotes array. This quote only repeats once after all other quotes have 
+	repeated. 
+	*/
+	var generatedQuote = function(){ 
+		/* 
+		Self invoking anonymous function that stores a generated random number (depending on quotes array's length), 
+		and returns a quote from quotes array with the random number as the index.
+		*/
+		generatedNumber = Math.floor(Math.random() * quotes.length); // stores random number/index
+		return quotes[generatedNumber];
+	}();
+
+	quotes.splice(generatedNumber, 1); // Removes current quote based on generated number/index in array
+	arr_placeholder.push(generatedQuote); // adds current quote to placeholder array, using generated number,index
+	quoteElement.textContent = generatedQuote.quote; 
 	sourceElement.textContent = generatedQuote.source;
+	
 	if(generatedQuote.hasOwnProperty("citation")){
-		// yearElement.style.display = "block";
 		citeElement.textContent = generatedQuote.citation;
 		sourceElement.innerHTML += "<span id=\"citation\" class=\"citation\"> " + "\"" + citeElement.textContent + "\"" +" </span>";
 	}
@@ -95,21 +110,8 @@ function printQuote(){
 		yearElement.textContent = generatedQuote.year;
 		sourceElement.innerHTML += "<span id=\"year\" class=\"year\"> " + yearElement.textContent +" </span>";
 	}
-	// console.log(quotes.length)
-	// console.log(arr_placeholder.length)
 	if(quotes.length < 1){
 		quotes = arr_placeholder.splice(0);
 		arr_placeholder.splice(0, arr_placeholder.length);
 	}
 }
-
-window.onload = function(event){
-	printQuote();
-	timerStart();
-}
-
-var intervalID;
-function timerStart(){
-	intervalID = window.setInterval(printQuote, 15000);
-}
-
